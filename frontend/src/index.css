@@ -1,0 +1,38 @@
+:root {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: #10233d;
+  background: #eef3f8;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+.page { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
+header { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
+h1 { margin: 0; font-size: 2rem; }
+h2 { margin: 0 0 12px; font-size: 1.1rem; }
+.eyebrow { margin: 0; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.72rem; color: #4d6a8a; }
+.badge { background: #f3c14e; color: #3b2a00; font-weight: 700; padding: 6px 10px; border-radius: 999px; font-size: 0.75rem; }
+.panel { background: white; border-radius: 16px; padding: 20px; margin: 20px 0; box-shadow: 0 8px 24px rgba(16, 35, 61, 0.06); }
+textarea, select, input { width: 100%; padding: 10px 12px; border: 1px solid #c9d6e5; border-radius: 10px; font: inherit; }
+textarea { resize: vertical; }
+label { display: block; font-weight: 600; margin-bottom: 8px; }
+button { background: #1254b5; color: white; border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 650; cursor: pointer; }
+button:disabled { opacity: 0.6; cursor: wait; }
+.row { display: flex; gap: 16px; align-items: center; margin-top: 12px; }
+.wrap { flex-wrap: wrap; }
+.row select, .row input { width: auto; min-width: 140px; }
+.hint { color: #4d6a8a; font-size: 0.9rem; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kpi { background: #1254b5; color: white; border-radius: 14px; padding: 14px; }
+.kpi span { display: block; opacity: 0.8; font-size: 0.8rem; }
+.kpi strong { font-size: 1.25rem; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #e6eef6; }
+.error { background: #fde8e8; color: #8a1f1f; padding: 12px; border-radius: 12px; }
+.reason { white-space: pre-wrap; font: inherit; background: #f7fafc; padding: 12px; border-radius: 10px; }
+.evidence { padding-left: 18px; }
+.evidence p { margin: 4px 0 12px; color: #4d6a8a; }
+footer { margin-top: 24px; color: #4d6a8a; font-size: 0.85rem; }
+@media (max-width: 800px) {
+  .grid { grid-template-columns: 1fr; }
+}

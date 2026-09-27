@@ -1,0 +1,54 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-supplychain}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-supplychain}
+      POSTGRES_DB: ${POSTGRES_DB:-supplychain}
+    ports:
+      # Host 5433 avoids conflict with a local Windows Postgres on 5432
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-supplychain} -d ${POSTGRES_DB:-supplychain}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-supplychain}:${POSTGRES_PASSWORD:-supplychain}@db:5432/${POSTGRES_DB:-supplychain}
+      POSTGRES_HOST: db
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5173}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./data:/app/data
+      - ./backend/app:/app/app
+      - ./backend/scripts:/app/scripts
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      VITE_API_BASE: http://localhost:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

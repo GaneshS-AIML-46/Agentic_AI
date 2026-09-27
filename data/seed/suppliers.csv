@@ -1,0 +1,9 @@
+# SYNTHETIC DATA — for demo only. Not real commercial data.
+code,name,country,city,latitude,longitude,reliability_score,risk_tier
+SUP-A,Apex Components,Vietnam,Hai Phong,20.844,106.688,0.91,medium
+SUP-B,Baltic Parts,Poland,Gdansk,54.352,18.646,0.96,low
+SUP-C,Chengdu Precision,China,Chengdu,30.572,104.066,0.88,medium
+SUP-D,Delhi Metals,India,Delhi,28.613,77.209,0.9,medium
+SUP-E,EuroForge,Germany,Stuttgart,48.775,9.182,0.97,low
+SUP-F,Fox River Fabrication,USA,Chicago,41.878,-87.629,0.94,low
+SUP-G,Gulf Manufacturing,UAE,Jebel Ali,24.985,55.027,0.86,high

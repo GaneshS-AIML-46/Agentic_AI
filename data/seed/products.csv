@@ -1,0 +1,12 @@
+# SYNTHETIC DATA — for demo only. Not real commercial data.
+sku,name,category,weight_kg,description
+PROD-A,Product A,fasteners,0.45,Standard industrial fastener kit used in assembly lines.
+PROD-B,Product B,electronics,1.2,Control-board module for warehouse automation.
+PROD-C,Product C,packaging,0.2,Recyclable corrugated packaging bundle.
+PROD-D,Product D,raw-metal,5.0,Cold-rolled steel blank.
+PROD-E,Product E,plastics,0.8,Injection-molded housing.
+PROD-F,Product F,chemicals,2.5,Industrial adhesive drum (unit = 1 kg equivalent).
+PROD-G,Product G,textiles,0.3,Protective work-glove pair.
+PROD-H,Product H,electronics,0.15,IoT sensor node.
+PROD-I,Product I,fasteners,0.6,High-tensile bolt set.
+PROD-J,Product J,packaging,0.35,Pallet wrap film roll.

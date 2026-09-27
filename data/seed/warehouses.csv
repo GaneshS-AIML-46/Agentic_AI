@@ -1,0 +1,6 @@
+# SYNTHETIC DATA — for demo only. Not real commercial data.
+code,name,city,country,latitude,longitude,capacity_units
+WH-ROT,Rotterdam DC,Rotterdam,Netherlands,51.924,4.477,80000
+WH-CHI,Chicago DC,Chicago,USA,41.878,-87.629,60000
+WH-SIN,Singapore DC,Singapore,Singapore,1.352,103.82,70000
+WH-MUM,Mumbai DC,Mumbai,India,19.076,72.877,50000

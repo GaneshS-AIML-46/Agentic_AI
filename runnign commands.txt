@@ -1,0 +1,14 @@
+
+# 1) Docker Desktop must be running
+cd "D:\Agentic AI"
+docker compose up db -d
+
+# 2) Backend
+cd backend
+.\.venv\Scripts\activate
+$env:PYTHONPATH="."
+uvicorn app.main:app --reload --port 8000
+
+# 3) Frontend (new terminal)
+cd "D:\Agentic AI\frontend"
+npm run dev
