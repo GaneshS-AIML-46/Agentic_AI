@@ -93,9 +93,4 @@ docker compose up --build
 - **Backend API:** `http://localhost:8000/docs`
 
 ---
-
-## 5. Contributors
-- **Ganesh S** ([@GaneshS-AIML-46](https://github.com/GaneshS-AIML-46)) - Lead Developer & AI Engineer
-
----
 *End of Report.*
