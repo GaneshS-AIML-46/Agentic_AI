@@ -1,4 +1,4 @@
-# SYNTHETIC — SupplyChainAI demo knowledge base
+
 # Inventory and safety-stock rules
 
 # Safety stock and reorder policy

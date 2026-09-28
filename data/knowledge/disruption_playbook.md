@@ -1,4 +1,4 @@
-# SYNTHETIC — SupplyChainAI demo knowledge base
+
 # Disruption playbook
 
 # Active disruption notes (aligned with synthetic risk_events)

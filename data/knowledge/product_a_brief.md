@@ -1,4 +1,4 @@
-# SYNTHETIC — SupplyChainAI demo knowledge base
+
 # Product A briefing
 
 # Product A

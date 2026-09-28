@@ -200,6 +200,6 @@ def explain_node(state: GraphState) -> dict[str, Any]:
         "delivery_time_hours": solver.get("delivery_time_hours"),
         "risk_score": risk.get("score"),
         "optimization_status": solver.get("status"),
-        "data_disclaimer": "SYNTHETIC DATA — demo only. Separate sources: database facts, forecast model, agent eligibility, solver quantities.",
+        "data_disclaimer": "Demo only. Separate sources: database facts, forecast model, agent eligibility, solver quantities.",
     }
     return {"recommendation": rec, "trace": _trace(state, "explanation composed")}

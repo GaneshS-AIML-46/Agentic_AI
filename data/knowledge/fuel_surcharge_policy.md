@@ -1,4 +1,4 @@
-# SYNTHETIC — SupplyChainAI demo knowledge base
+
 # Fuel surcharge policy
 
 # Fuel surcharge

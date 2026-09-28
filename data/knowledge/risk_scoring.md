@@ -1,4 +1,4 @@
-# SYNTHETIC — SupplyChainAI demo knowledge base
+
 # Risk scoring rubric
 
 # Risk score (0-100)

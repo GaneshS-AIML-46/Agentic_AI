@@ -1,9 +1,9 @@
 # SYNTHETIC DATA — for demo only. Not real commercial data.
 code,name,country,city,latitude,longitude,reliability_score,risk_tier
-SUP-A,Apex Components,Vietnam,Hai Phong,20.844,106.688,0.91,medium
-SUP-B,Baltic Parts,Poland,Gdansk,54.352,18.646,0.96,low
-SUP-C,Chengdu Precision,China,Chengdu,30.572,104.066,0.88,medium
-SUP-D,Delhi Metals,India,Delhi,28.613,77.209,0.9,medium
-SUP-E,EuroForge,Germany,Stuttgart,48.775,9.182,0.97,low
-SUP-F,Fox River Fabrication,USA,Chicago,41.878,-87.629,0.94,low
-SUP-G,Gulf Manufacturing,UAE,Jebel Ali,24.985,55.027,0.86,high
+SUP-A,Tata Components,India,Pune,18.5204,73.8567,0.91,medium
+SUP-B,Reliance Parts,India,Ahmedabad,23.0225,72.5714,0.96,low
+SUP-C,Mahindra Precision,India,Nashik,20.011,73.7903,0.88,medium
+SUP-D,Delhi Metals,India,Delhi,28.6139,77.209,0.9,medium
+SUP-E,Bharat Forge,India,Kolkata,22.5726,88.3639,0.97,low
+SUP-F,Godrej Fabrication,India,Hyderabad,17.385,78.4867,0.94,low
+SUP-G,Jindal Manufacturing,India,Surat,21.1702,72.8311,0.86,high

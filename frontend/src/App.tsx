@@ -65,8 +65,8 @@ export default function App() {
     <div className="page">
       <header>
         <div>
-          <p className="eyebrow">Multi-agent decision intelligence</p>
-          <h1>SupplyChainAI</h1>
+          <p className="eyebrow">Optimize. Explain. Execute.</p>
+          <h1>OptiChain</h1>
         </div>
       </header>
 

@@ -1,4 +1,4 @@
-# SYNTHETIC — SupplyChainAI demo knowledge base
+
 # Supplier sourcing policy (not a real corporate policy)
 
 # Multi-source policy for critical SKUs

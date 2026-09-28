@@ -1,6 +1,6 @@
-# SupplyChainAI - Comprehensive End-to-End Project Report
+# OptiChain: Multi-Agent Supply Chain Optimization Platform - Comprehensive End-to-End Project Report
 
-**SupplyChainAI** is an advanced multi-agent decision intelligence platform for supply-chain planning. It allows users to ask supply chain questions in plain English and returns an explainable, cost-optimized plan backed by real mathematical optimization (Google OR-Tools) rather than LLM guesswork.
+**OptiChain** is an advanced multi-agent decision intelligence platform for supply-chain planning. It allows users to ask supply chain questions in plain English and returns an explainable, cost-optimized plan backed by real mathematical optimization (Google OR-Tools) rather than LLM guesswork.
 
 This document serves as the comprehensive report detailing the dataset architecture, the intricate workings of all sub-agents, the optimization engine, and the front-end user interface.
 
@@ -23,7 +23,7 @@ The project is built on a rich, relational database hosted in PostgreSQL. It is 
 
 ## 2. The Multi-Agent Ecosystem (Nook & Cranny Report)
 
-The brain of SupplyChainAI operates via **LangGraph**, orchestrating five highly specialized AI agents that act as fact-gatherers and constraint builders. 
+The brain of OptiChain operates via **LangGraph**, orchestrating five highly specialized AI agents that act as fact-gatherers and constraint builders. 
 
 ### A. The Orchestrator (Supervisor & RAG)
 Before specialists are invoked, the system parses the user's natural language intent (e.g., *"I need 10k units of Product A with low risk"*). It then uses **Hybrid RAG** (dense vector search + sparse keyword search) to retrieve relevant company policies to ground the agents in corporate reality.
