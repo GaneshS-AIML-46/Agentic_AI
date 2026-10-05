@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.db.models import DecisionRun
 from app.graph.graph import run_pipeline
+from app.live.feed import tick
+from app.whatif.engine import delivery_hours
 
 
 def persist_run(
@@ -14,6 +16,7 @@ def persist_run(
     state: dict[str, Any],
     parent_run_id: int | None = None,
     extra: dict | None = None,
+    human_feedback: str | None = None,
 ) -> DecisionRun:
     rec = state.get("recommendation") or {}
     payload = {
@@ -29,14 +32,22 @@ def persist_run(
         "evidence": state.get("evidence"),
         "trace": state.get("trace"),
         "patch": state.get("patch"),
+        "human_constraints": state.get("human_constraints") or [],
+        "scenario": state.get("scenario"),
+        "review_status": state.get("review_status") or "pending_review",
         **(extra or {}),
     }
+    intent = state.get("intent") or {}
     run = DecisionRun(
         query=query,
         status=(state.get("solver") or {}).get("status") or "completed",
         request_json={"query": query, "patch": state.get("patch")},
         result_json=payload,
         parent_run_id=parent_run_id,
+        review_status=state.get("review_status") or "pending_review",
+        human_feedback=human_feedback,
+        human_constraints=state.get("human_constraints") or [],
+        llm_warning=intent.get("llm_warning"),
     )
     db.add(run)
     db.commit()
@@ -76,9 +87,7 @@ def to_response(run: DecisionRun, what_if: dict | None = None) -> dict[str, Any]
             "provenance": inv.get("provenance"),
         },
         "total_cost": rec.get("total_cost") if rec.get("total_cost") is not None else solver.get("total_cost"),
-        "delivery_time_hours": rec.get("delivery_time_hours")
-        if rec.get("delivery_time_hours") is not None
-        else solver.get("delivery_time_hours"),
+        "delivery_time_hours": delivery_hours(rec, solver),
         "risk_score": rec.get("risk_score") if rec.get("risk_score") is not None else risk.get("score"),
         "optimization_status": rec.get("optimization_status") or solver.get("status"),
         "retrieved_evidence": r.get("evidence") or [],
@@ -86,11 +95,40 @@ def to_response(run: DecisionRun, what_if: dict | None = None) -> dict[str, Any]
         "agent_trace": r.get("trace") or [],
         "validation": r.get("validation") or {},
         "what_if": what_if,
+        "review_status": run.review_status or r.get("review_status") or "pending_review",
+        "human_feedback": run.human_feedback,
+        "human_constraints": run.human_constraints or r.get("human_constraints") or [],
+        "llm_warning": run.llm_warning or (r.get("intent") or {}).get("llm_warning"),
+        "scenario": r.get("scenario"),
+        "data_as_of": (r.get("live") or {}).get("data_as_of"),
+        "live": r.get("live"),
         "data_disclaimer": rec.get("data_disclaimer")
         or "SYNTHETIC DATA — for demo only.",
     }
 
 
-def execute_decision(db: Session, query: str, patch: dict | None = None, parent_id: int | None = None) -> DecisionRun:
-    state = run_pipeline(db, query, patch=patch)
-    return persist_run(db, query, dict(state), parent_run_id=parent_id)
+def execute_decision(
+    db: Session,
+    query: str,
+    patch: dict | None = None,
+    parent_id: int | None = None,
+    human_constraints: list | None = None,
+    review_status: str = "pending_review",
+    human_feedback: str | None = None,
+) -> DecisionRun:
+    live = tick(db)
+    state = run_pipeline(
+        db,
+        query,
+        patch=patch,
+        human_constraints=human_constraints,
+        review_status=review_status,
+    )
+    return persist_run(
+        db,
+        query,
+        dict(state),
+        parent_run_id=parent_id,
+        human_feedback=human_feedback,
+        extra={"live": live},
+    )

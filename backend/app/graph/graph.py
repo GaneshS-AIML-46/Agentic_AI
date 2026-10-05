@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.graph.nodes import (
     explain_node,
+    hitl_node,
     parse_node,
     rag_node,
     replan_node,
@@ -28,6 +29,7 @@ def build_graph(db: Session):
     graph.add_node("solve", solve_node)
     graph.add_node("validate", validate_node)
     graph.add_node("replan", replan_node)
+    graph.add_node("hitl", hitl_node)
     graph.add_node("explain", explain_node)
 
     graph.add_edge(START, "parse")
@@ -39,16 +41,30 @@ def build_graph(db: Session):
     graph.add_conditional_edges(
         "validate",
         should_replan,
-        {"replan": "replan", "explain": "explain"},
+        {"replan": "replan", "explain": "hitl"},
     )
     graph.add_edge("replan", "specialists")
+    graph.add_edge("hitl", "explain")
     graph.add_edge("explain", END)
     return graph.compile()
 
 
-def run_pipeline(db: Session, query: str, patch: dict | None = None) -> GraphState:
+def run_pipeline(
+    db: Session,
+    query: str,
+    patch: dict | None = None,
+    human_constraints: list | None = None,
+    review_status: str = "pending_review",
+) -> GraphState:
     app = build_graph(db)
-    initial: GraphState = {"query": query, "replan_count": 0, "trace": []}
+    initial: GraphState = {
+        "query": query,
+        "replan_count": 0,
+        "trace": [],
+        "review_status": review_status,
+    }
     if patch:
         initial["patch"] = patch
+    if human_constraints:
+        initial["human_constraints"] = human_constraints
     return app.invoke(initial)

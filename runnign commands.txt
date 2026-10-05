@@ -12,3 +12,27 @@ uvicorn app.main:app --reload --port 8000
 # 3) Frontend (new terminal)
 cd "D:\Agentic AI\frontend"
 npm run dev
+
+
+
+query example
+The Balanced Approach (Risk vs Cost):
+
+"I need 10,000 units of Product A next month with the lowest risk possible." (The AI will balance cost against supplier reliability and risk tiers across India).
+
+
+Strict Constraints (Specific DC & Risk Aversion):
+
+"We need 5,000 units of Product C delivered to the Chennai DC. Ignore high-risk suppliers." (Shows the system filtering out Jindal Manufacturing in Surat due to its high-risk tier before doing the math).
+
+Pure Cost Optimization (Ignoring Risk):
+
+"Procure 8,000 units of Product A as cheaply as possible. I don't care about the risk." (Demonstrates the solver picking the absolute cheapest route regardless of the vendor's reliability score).
+
+Time-Sensitive Delivery:
+
+"I need 4,000 units of Product A delivered to the Delhi DC within 30 hours." (Forces the Route Agent to filter out slow rail routes and forces the solver to pick faster truck or air routes, even if they cost more).
+
+Mode Preference:
+
+"Can you get me 2,000 units of Product G? Prefer truck routes if possible." (Shows the system's ability to map natural language to specific logistical constraints).

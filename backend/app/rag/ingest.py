@@ -25,10 +25,42 @@ def chunk_text(text: str, size: int = 700, overlap: int = 80) -> list[str]:
     return [c for c in chunks if c]
 
 
+def _as_floats(value) -> list[float]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        raw = value.strip().strip("[]")
+        if not raw:
+            return []
+        return [float(part) for part in raw.split(",")]
+    return [float(part) for part in value]
+
+
+def embeddings_stale(db: Session) -> bool:
+    """True when stored vectors do not match the current embedding function."""
+    row = db.execute(
+        text("SELECT content, embedding FROM document_chunks ORDER BY id LIMIT 1")
+    ).mappings().first()
+    if not row:
+        return False
+    stored = _as_floats(row["embedding"])
+    fresh = embed_texts([row["content"]])[0]
+    if len(stored) != len(fresh) or not stored:
+        return True
+    return sum(a * b for a, b in zip(stored, fresh)) < 0.85
+
+
 def ingest_knowledge(db: Session, force: bool = False) -> dict:
     existing = db.scalar(select(func.count(Document.id))) or 0
     if existing and not force:
-        return {"skipped": True, "documents": existing}
+        try:
+            stale = embeddings_stale(db)
+        except Exception:
+            stale = False
+        if stale:
+            force = True
+        else:
+            return {"skipped": True, "documents": existing}
 
     if force:
         db.execute(delete(DocumentChunk))

@@ -12,6 +12,7 @@ def run_risk_agent(
     db: Session,
     suppliers: SupplierResult,
     routes: RouteResult,
+    scenario_label: str = "",
 ) -> RiskResult:
     drivers: list[RiskDriver] = []
     eligible = [o for o in suppliers.offers if o.eligible]
@@ -96,6 +97,18 @@ def run_risk_agent(
                 )
             )
 
+    scenario_part = 0.0
+    if scenario_label and scenario_label not in {"baseline", "scenario"}:
+        scenario_part = 4.0
+        drivers.append(
+            RiskDriver(
+                kind="scenario",
+                detail=scenario_label,
+                severity="medium",
+                score_contribution=scenario_part,
+            )
+        )
+
     rel_part = drivers[0].score_contribution if drivers else 12.0
     score = min(
         100.0,
@@ -103,7 +116,8 @@ def run_risk_agent(
         + event_score
         + wx_score
         + route_part
-        + max(0, fuel_mult - 1) * 25,
+        + max(0, fuel_mult - 1) * 25
+        + scenario_part,
     )
     notes = [
         "Risk score is a rubric over database events, reliability, weather and fuel indices.",

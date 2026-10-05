@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -20,6 +20,11 @@ class WhatIfBody(WhatIfRequest):
     query: str | None = None
 
 
+class ReviewRequest(BaseModel):
+    action: Literal["approve", "revise"]
+    feedback: str = ""
+
+
 class DecisionResponse(BaseModel):
     run_id: int
     query: str
@@ -36,4 +41,11 @@ class DecisionResponse(BaseModel):
     agent_trace: list[str]
     validation: dict[str, Any]
     what_if: dict[str, Any] | None = None
+    review_status: str | None = None
+    human_feedback: str | None = None
+    human_constraints: list[dict[str, Any]] = Field(default_factory=list)
+    llm_warning: str | None = None
+    scenario: dict[str, Any] | None = None
+    data_as_of: str | None = None
+    live: dict[str, Any] | None = None
     data_disclaimer: str

@@ -8,12 +8,16 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    llm_provider: str = "mock"
+    llm_provider: str = "gemini"
     gemini_api_key: str = ""
+    gemini_api_key_2: str = ""
+    gemini_api_key_3: str = ""
     google_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
+    gemini_model: str = "gemini-3.8-flash"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
+    groq_api_key: str = ""
+    groq_model: str = "qwen/qwen3.8-27b"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.1"
 
@@ -39,8 +43,18 @@ class Settings(BaseSettings):
     max_replan: int = 2
 
     @property
+    def gemini_keys(self) -> list[str]:
+        keys: list[str] = []
+        for value in (self.gemini_api_key, self.gemini_api_key_2, self.gemini_api_key_3, self.google_api_key):
+            cleaned = (value or "").strip()
+            if cleaned and cleaned not in keys:
+                keys.append(cleaned)
+        return keys
+
+    @property
     def resolved_gemini_key(self) -> str:
-        return self.gemini_api_key or self.google_api_key
+        keys = self.gemini_keys
+        return keys[0] if keys else ""
 
     @property
     def effective_llm_provider(self) -> str:

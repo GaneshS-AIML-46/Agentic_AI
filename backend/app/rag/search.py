@@ -23,7 +23,7 @@ def search(db: Session, query: str, k: int = 6) -> list[EvidenceHit]:
     if not query.strip():
         return []
 
-    vector = embed_texts([query])[0]
+    vector = embed_texts([query], task_type="RETRIEVAL_QUERY")[0]
     vec_literal = "[" + ",".join(f"{x:.6f}" for x in vector) + "]"
 
     dense_sql = text(

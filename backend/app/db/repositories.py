@@ -82,7 +82,11 @@ def open_risk_events(db: Session) -> list[RiskEvent]:
 
 
 def latest_market_prices(db: Session) -> list[MarketPrice]:
-    return list(db.scalars(select(MarketPrice).order_by(MarketPrice.observed_at.desc()).limit(20)))
+    return list(
+        db.scalars(
+            select(MarketPrice).order_by(MarketPrice.observed_at.desc(), MarketPrice.id.desc()).limit(40)
+        )
+    )
 
 
 def weather_events(db: Session) -> list[WeatherEvent]:

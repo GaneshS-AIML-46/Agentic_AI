@@ -17,5 +17,8 @@ class GraphState(TypedDict, total=False):
     validation: dict[str, Any]
     recommendation: dict[str, Any]
     patch: dict[str, Any]
+    human_constraints: list[dict[str, Any]]
+    scenario: dict[str, Any]
+    review_status: str
     replan_count: int
     trace: list[str]

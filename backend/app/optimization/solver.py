@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 from app.agents.schemas import AgentBundle, RouteOption, SupplierOffer
 from app.core.config import settings
+from app.hitl.constraints import HumanConstraint
 
 
 class Allocation(BaseModel):
@@ -48,15 +49,41 @@ def _solver():
     return s, "GLOP"
 
 
+def _constraints(raw: list | None) -> list[HumanConstraint]:
+    parsed: list[HumanConstraint] = []
+    for item in raw or []:
+        if isinstance(item, HumanConstraint):
+            parsed.append(item)
+        else:
+            parsed.append(HumanConstraint.model_validate(item))
+    return parsed
+
+
 def solve_bundle(
     bundle: AgentBundle,
     risk_weight: float | None = None,
     enforce_low_risk: bool = True,
+    human_constraints: list | None = None,
 ) -> SolverResult:
     """MILP: quantities are decision variables. LLM does not compute them."""
     from ortools.linear_solver import pywraplp
 
     risk_weight = settings.risk_penalty_weight if risk_weight is None else risk_weight
+    constraints = _constraints(human_constraints)
+    excluded_suppliers = {c.code for c in constraints if c.kind == "exclude_supplier" and c.code}
+    excluded_routes = {c.code for c in constraints if c.kind == "exclude_route" and c.code}
+    max_lead = min(
+        (int(c.value) for c in constraints if c.kind == "max_lead_time_days" and c.value is not None),
+        default=None,
+    )
+    min_reliability = max(
+        (float(c.value) for c in constraints if c.kind == "min_reliability" and c.value is not None),
+        default=None,
+    )
+    share_caps = [
+        float(c.value) for c in constraints if c.kind == "max_supplier_share" and c.value is not None
+    ]
+    max_share = min(share_caps) if share_caps else None
     solver, backend = _solver()
     if solver is None:
         return SolverResult(
@@ -69,11 +96,23 @@ def solve_bundle(
             infeasibility="OR-Tools solver could not be created",
         )
 
-    offers = {o.supplier_id: o for o in bundle.suppliers.offers if o.eligible}
+    offers = {}
+    for offer in bundle.suppliers.offers:
+        if not offer.eligible:
+            continue
+        if offer.supplier_code in excluded_suppliers:
+            continue
+        if max_lead is not None and offer.lead_time_days > max_lead:
+            continue
+        if min_reliability is not None and offer.reliability_score < min_reliability:
+            continue
+        offers[offer.supplier_id] = offer
     lanes: list[tuple[SupplierOffer, RouteOption]] = []
     for route in bundle.routes.routes:
         offer = offers.get(route.supplier_id)
         if not offer:
+            continue
+        if route.code in excluded_routes:
             continue
         if route.capacity_units <= 0:
             continue
@@ -161,6 +200,13 @@ def solve_bundle(
             if related:
                 solver.Add(solver.Sum(related) <= 0.60 * total)
 
+    if max_share is not None and integer and x:
+        total_units = solver.Sum(x.values())
+        for sid, offer in offers.items():
+            related = [var for (s, _rid), var in x.items() if s == sid]
+            if related:
+                solver.Add(solver.Sum(related) <= max_share * total_units)
+
     obj_terms = []
     for (sid, rid), var in x.items():
         offer = offers[sid]
@@ -188,7 +234,12 @@ def solve_bundle(
     if status not in {"OPTIMAL", "FEASIBLE"}:
         # Relax low-risk concentration constraints and retry once.
         if enforce_low_risk:
-            return solve_bundle(bundle, risk_weight=risk_weight, enforce_low_risk=False)
+            return solve_bundle(
+                bundle,
+                risk_weight=risk_weight,
+                enforce_low_risk=False,
+                human_constraints=human_constraints,
+            )
         return SolverResult(
             status=status,
             total_cost=0,
@@ -250,5 +301,6 @@ def solve_bundle(
             "Objective minimizes procurement + transport + holding + reliability penalty.",
             "Quantities are solver outputs, not LLM estimates.",
             f"Low-risk constraints enforced={enforce_low_risk}",
+            f"Human constraints applied={len(constraints)}",
         ],
     )

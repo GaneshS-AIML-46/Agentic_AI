@@ -16,6 +16,20 @@ def init_db() -> None:
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         conn.commit()
     Base.metadata.create_all(bind=engine)
+    _ensure_hitl_columns()
+
+
+def _ensure_hitl_columns() -> None:
+    """Add human-review columns on databases created before the HITL fields existed."""
+    statements = [
+        "ALTER TABLE decision_runs ADD COLUMN IF NOT EXISTS review_status VARCHAR(32) DEFAULT 'pending_review'",
+        "ALTER TABLE decision_runs ADD COLUMN IF NOT EXISTS human_feedback TEXT",
+        "ALTER TABLE decision_runs ADD COLUMN IF NOT EXISTS human_constraints JSON",
+        "ALTER TABLE decision_runs ADD COLUMN IF NOT EXISTS llm_warning TEXT",
+    ]
+    with engine.begin() as conn:
+        for statement in statements:
+            conn.execute(text(statement))
 
 
 def get_db() -> Generator[Session, None, None]:

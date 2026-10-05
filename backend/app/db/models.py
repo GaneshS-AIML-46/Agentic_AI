@@ -241,3 +241,7 @@ class DecisionRun(Base):
     parent_run_id: Mapped[int | None] = mapped_column(
         ForeignKey("decision_runs.id"), nullable=True
     )
+    review_status: Mapped[str] = mapped_column(String(32), default="pending_review")
+    human_feedback: Mapped[str | None] = mapped_column(Text, nullable=True)
+    human_constraints: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON, nullable=True)
+    llm_warning: Mapped[str | None] = mapped_column(Text, nullable=True)

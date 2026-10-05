@@ -26,10 +26,10 @@ def run_supplier_agent(
         if supplier.code in failed_supplier_codes:
             eligible = False
             reasons.append("supplier failure scenario")
-        if sp.lead_time_days > intent.lead_time_days_max:
+        if sp.lead_time_days > intent.safe_lead_time:
             eligible = False
             reasons.append(
-                f"lead time {sp.lead_time_days}d exceeds horizon {intent.lead_time_days_max}d"
+                f"lead time {sp.lead_time_days}d exceeds horizon {intent.safe_lead_time}d"
             )
         if intent.low_risk and supplier.risk_tier == "high":
             reasons.append("high risk tier — allowed but penalized for low-risk objective")

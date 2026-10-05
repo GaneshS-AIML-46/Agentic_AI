@@ -11,6 +11,7 @@ ScenarioType = Literal[
     "fuel_increase",
     "route_disruption",
     "inventory_shortage",
+    "natural_language",
 ]
 
 
@@ -19,6 +20,7 @@ class WhatIfRequest(BaseModel):
     pct: float | None = Field(default=None, description="Percentage, e.g. 20 for +20%")
     supplier_code: str | None = None
     route_code: str | None = None
+    text: str | None = Field(default=None, description="Natural-language scenario when scenario=natural_language")
 
 
 class WhatIfPatch(BaseModel):
@@ -59,7 +61,30 @@ def build_patch(req: WhatIfRequest) -> WhatIfPatch:
             inventory_factor=max(0.0, 1 - (pct or 0.5)),
             label=f"Inventory {(req.pct or 50)}% short",
         )
+    if req.scenario == "natural_language":
+        from app.scenarios.engine import scenario_from_text
+
+        return scenario_from_text(req.text or "", label="natural language").patch
     return WhatIfPatch(label="noop")
+
+
+def delivery_hours(record: dict[str, Any] | None, solver: dict[str, Any] | None = None) -> float:
+    """Prefer an explicit positive duration, then derive it from allocations."""
+    record = record or {}
+    solver = solver or {}
+    for source in (record, solver):
+        value = source.get("delivery_time_hours")
+        if isinstance(value, (int, float)) and value > 0:
+            return float(value)
+    allocations = solver.get("allocations") or record.get("routes") or []
+    hours: list[float] = []
+    for row in allocations:
+        if not isinstance(row, dict):
+            continue
+        duration = float(row.get("lead_time_days") or 0) * 24 + float(row.get("transit_hours") or 0)
+        if duration > 0:
+            hours.append(duration)
+    return round(max(hours), 1) if hours else 0.0
 
 
 def diff_results(baseline: dict[str, Any], scenario: dict[str, Any]) -> dict[str, Any]:
